@@ -21,7 +21,7 @@
 
 > Replace with your deployed Vercel URL.
 
-* **Live Website:** https://your-gamefinder.vercel.app
+* **Live Website:** https://gamefinder-beta.vercel.app/
 * **GitHub Repository:** https://github.com/vanamalajayasurya/GameFinder
 
 ---
