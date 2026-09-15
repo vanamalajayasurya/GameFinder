@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Game Finder — search any game, any platform</title>
+<meta name="description" content="Search any game and see ratings, platforms, screenshots and price in one place." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Boot overlay: shown once on load -->
+  <div id="boot" class="boot" aria-hidden="true">
+    <div class="boot__line">GAME FINDER</div>
+    <div class="boot__sub">loading library<span class="boot__dots"></span></div>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="#/" class="brand">
+        <span class="brand__mark">▣</span>
+        <span class="brand__text">GAME<span class="brand__accent">FINDER</span></span>
+      </a>
+      <button id="wishlist-toggle" class="icon-btn" aria-label="Open wishlist">
+        ♥ <span id="wishlist-count">0</span>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Toggle light and dark mode">◐</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO / SEARCH -->
+    <section class="hero">
+      <div class="hero__inner">
+        <p class="hero__eyebrow">900,000+ games · every platform</p>
+        <h1 class="hero__title">Find out if it's<br>worth your time.</h1>
+        <div class="searchbar">
+          <span class="searchbar__prompt">&gt;</span>
+          <input
+            id="search-input"
+            class="searchbar__input"
+            type="text"
+            placeholder="type a title — Elden Ring, GTA 6, God of War..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span class="searchbar__cursor"></span>
+          <div id="search-suggestions" class="suggestions" hidden></div>
+        </div>
+        <div class="chips" id="genre-chips">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <section class="filterbar" id="filterbar">
+      <div class="filterbar__group">
+        <label for="f-platform">Platform</label>
+        <select id="f-platform">
+          <option value="">All platforms</option>
+          <option value="187,18,1">PS5 / PS4</option>
+          <option value="186,1">Xbox Series X/S / One</option>
+          <option value="4,5,6">PC (Win/Mac/Linux)</option>
+          <option value="7">Nintendo Switch</option>
+        </select>
+      </div>
+      <div class="filterbar__group">
+        <label for="f-order">Sort</label>
+        <select id="f-order">
+          <option value="-added">Trending</option>
+          <option value="-rating">Top rated</option>
+          <option value="-released">Newest</option>
+          <option value="name">A–Z</option>
+        </select>
+      </div>
+      <div class="filterbar__group">
+        <label for="f-rating">Min rating</label>
+        <select id="f-rating">
+          <option value="0">Any</option>
+          <option value="3">3★ & up</option>
+          <option value="4">4★ & up</option>
+          <option value="4.5">4.5★ & up</option>
+        </select>
+      </div>
+      <button id="f-clear" class="ghost-btn">Reset</button>
+    </section>
+
+    <!-- RESULTS (search mode) -->
+    <section id="results-section" class="section" hidden>
+      <h2 class="section__title" id="results-title">Results</h2>
+      <div id="results-grid" class="grid"></div>
+      <p id="results-empty" hidden>No games found.</p>
+      <button id="load-more" class="ghost-btn" hidden>Load more</button>
+    </section>
+
+    <!-- BROWSE (default landing content) -->
+    <div id="browse-section">
+      <section class="section">
+        <div class="section__head">
+          <h2 class="section__title">Trending this month</h2>
+        </div>
+        <div id="trending-row" class="row"></div>
+      </section>
+
+      <section class="section">
+        <div class="section__head">
+          <h2 class="section__title">Top rated</h2>
+        </div>
+        <div id="toprated-grid" class="grid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section__head">
+          <h2 class="section__title">New releases</h2>
+        </div>
+        <div id="newreleases-grid" class="grid"></div>
+      </section>
+    </div>
+
+    <!-- COMPARE TRAY -->
+    <div id="compare-tray" class="compare-tray" hidden>
+      <div class="compare-tray__inner">
+        <span class="compare-tray__label">Compare</span>
+        <div id="compare-slots" class="compare-tray__slots"></div>
+        <button id="compare-open" class="ghost-btn ghost-btn--accent" disabled>Compare now</button>
+        <button id="compare-clear" class="icon-btn" aria-label="Clear comparison">✕</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- GAME DETAIL DRAWER -->
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="drawer" class="drawer" hidden aria-hidden="true">
+    <button id="drawer-close" class="icon-btn drawer__close" aria-label="Close">✕</button>
+    <div id="drawer-content" class="drawer__content">
+      <div class="drawer__loading">reading cartridge<span class="boot__dots"></span></div>
+    </div>
+  </aside>
+
+  <!-- WISHLIST PANEL -->
+  <div id="wishlist-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="wishlist-panel" class="drawer drawer--wishlist" hidden aria-hidden="true">
+    <button id="wishlist-close" class="icon-btn drawer__close" aria-label="Close">✕</button>
+    <div class="drawer__content">
+      <h2 class="section__title">Wishlist</h2>
+      <p class="wishlist__hint">Saved in this browser. Tap ♥ on any game to add or remove it.</p>
+      <div id="wishlist-list" class="wishlist-list"></div>
+    </div>
+  </aside>
+
+  <!-- COMPARE MODAL -->
+  <div id="compare-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="compare-modal" class="drawer drawer--compare" hidden aria-hidden="true">
+    <button id="compare-close" class="icon-btn drawer__close" aria-label="Close">✕</button>
+    <div id="compare-content" class="drawer__content"></div>
+  </aside>
+
+  <footer class="footer">
+    <p>Data from <a href="https://rawg.io" target="_blank" rel="noopener">RAWG</a>. Built as a portfolio project — not affiliated with any platform holder.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
